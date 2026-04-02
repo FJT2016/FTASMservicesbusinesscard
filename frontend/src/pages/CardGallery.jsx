@@ -6,6 +6,29 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Lock, Eye } from 'lucide-react';
 
+const FALLBACK_CARDS = [
+  {
+    id: 'fallback-1',
+    name: 'Fardan Jabir Tareen',
+    title: 'Head of IT',
+    company: 'FTASM Services',
+    mobile: '+971 50 123 4567',
+    email: 'fardan@ftasmservices.com',
+    industry: 'Information Technology',
+    card_image_data: ''
+  },
+  {
+    id: 'fallback-2',
+    name: 'Shayaan Shakeel Moidin Udupi',
+    title: 'Head of Music and Updates',
+    company: 'FTASM Services',
+    mobile: '+971 50 765 4321',
+    email: 'shayaan@ftasmservices.com',
+    industry: 'Media & Entertainment',
+    card_image_data: ''
+  }
+];
+
 const CardGallery = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,9 +41,10 @@ const CardGallery = () => {
   const fetchCards = async () => {
     try {
       const response = await axios.get(`${API}/cards`);
-      setCards(response.data);
+      setCards(response.data.length > 0 ? response.data : FALLBACK_CARDS);
     } catch (error) {
-      console.error('Failed to fetch cards');
+      console.error('Failed to fetch cards, using fallback data');
+      setCards(FALLBACK_CARDS);
     } finally {
       setLoading(false);
     }

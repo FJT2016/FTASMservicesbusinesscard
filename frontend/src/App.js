@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -35,7 +35,7 @@ function App() {
   return (
     <div className="App">
       <Toaster position="top-right" richColors />
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<CardGallery />} />
           <Route path="/card/:cardId" element={<CardDetail />} />
@@ -56,7 +56,7 @@ function App() {
             } 
           />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }

@@ -8,6 +8,29 @@ import { toast } from 'sonner';
 import { Download, QrCode, ArrowLeft, Smartphone, FileText, Image as ImageIcon, Wallet } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+const FALLBACK_CARDS = {
+  'fallback-1': {
+    id: 'fallback-1',
+    name: 'Fardan Jabir Tareen',
+    title: 'Head of IT',
+    company: 'FTASM Services',
+    mobile: '+971 50 123 4567',
+    email: 'fardan@ftasmservices.com',
+    industry: 'Information Technology',
+    card_image_data: ''
+  },
+  'fallback-2': {
+    id: 'fallback-2',
+    name: 'Shayaan Shakeel Moidin Udupi',
+    title: 'Head of Music and Updates',
+    company: 'FTASM Services',
+    mobile: '+971 50 765 4321',
+    email: 'shayaan@ftasmservices.com',
+    industry: 'Media & Entertainment',
+    card_image_data: ''
+  }
+};
+
 const CardDetail = () => {
   const { cardId } = useParams();
   const navigate = useNavigate();
@@ -26,8 +49,12 @@ const CardDetail = () => {
       setCard(response.data);
       setQrCodeUrl(`${API}/cards/${cardId}/qrcode`);
     } catch (error) {
-      toast.error('Failed to fetch card details');
-      navigate('/');
+      if (FALLBACK_CARDS[cardId]) {
+        setCard(FALLBACK_CARDS[cardId]);
+      } else {
+        toast.error('Failed to fetch card details');
+        navigate('/');
+      }
     } finally {
       setLoading(false);
     }
