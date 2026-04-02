@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FTASM Services | Business Card Manager</title>
+    <meta name="description" content="FTASM Services - Professional Digital Business Card Manager">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 50%);
+        }
+        .hero-inner {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 5rem 1.5rem;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 1.5rem;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards Grid */
+        .cards-section {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card */
+        .card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+        }
+        .card-body { padding: 1.5rem; }
+        .card-image-placeholder {
+            height: 14rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(244, 208, 63, 0.1) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .card-image-placeholder .initials {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+        .card-image-placeholder .fullname {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: #D4AF37;
+            opacity: 0.7;
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 0.5rem;
+        }
+        .card .role { font-size: 0.875rem; color: #a0a0a0; margin-bottom: 0.25rem; }
+        .card .company { font-size: 0.875rem; color: #D4AF37; font-weight: 600; }
+        .card .view-link {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #D4AF37;
+            font-size: 0.875rem;
+        }
+
+        /* Detail View */
+        .detail-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+        .detail-overlay.active { display: block; }
+        .detail-container {
+            max-width: 64rem;
+            margin: 0 auto;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #D4AF37;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .back-btn:hover { opacity: 0.8; }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+        .detail-card {
+            background: rgba(26, 26, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        .detail-card h2 {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 0.5rem;
+        }
+        .detail-card .role-text {
+            font-size: 1.125rem;
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+        }
+        .detail-card .info-row {
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+        .detail-card .info-row strong {
+            color: #D4AF37;
+        }
+        .detail-preview {
+            width: 100%;
+            height: 24rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(244, 208, 63, 0.1) 100%);
+            border: 3px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .detail-preview h2 {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 0.5rem;
+        }
+        .detail-preview .title { font-size: 1.125rem; color: #a0a0a0; margin-bottom: 1rem; }
+        .detail-preview .company { font-size: 1.25rem; color: #D4AF37; font-weight: 600; }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.25rem;
+            color: #D4AF37;
+            margin-bottom: 1rem;
+        }
+
+        /* Download buttons */
+        .download-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
+            color: #000;
+            font-weight: 600;
+            padding: 0.65rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #D4AF37;
+            border: 1px solid #D4AF37;
+            padding: 0.65rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn-outline:hover { background: rgba(212, 175, 55, 0.1); }
+        .wallet-section { margin-top: 1rem; }
+        .wallet-section .note {
+            font-size: 0.75rem;
+            color: #808080;
+            margin-top: 1rem;
+        }
+
+        /* Contact actions */
+        .contact-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .contact-actions a {
+            color: #D4AF37;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .contact-actions a:hover { text-decoration: underline; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: #1a1a1a;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: #D4AF37;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(-1rem);
+            transition: opacity 0.3s, transform 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <!-- Gallery View -->
+    <div id="gallery-view">
+        <div class="hero">
+            <div class="hero-inner">
+                <h1>Business Card Gallery</h1>
+                <p>Professional business cards for FTASM Services team</p>
+            </div>
+        </div>
+        <div class="cards-section">
+            <div class="cards-grid" id="cards-grid"></div>
+        </div>
+    </div>
+
+    <!-- Detail View -->
+    <div class="detail-overlay" id="detail-view">
+        <div class="detail-container">
+            <button class="back-btn" onclick="showGallery()">&#8592; Back to Gallery</button>
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-card">
+                        <div class="detail-preview" id="detail-preview"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-card" id="detail-info"></div>
+                    <div class="detail-card" style="margin-top: 1.5rem;">
+                        <h3 class="section-title">Download Options</h3>
+                        <div class="download-grid" id="download-buttons"></div>
+                    </div>
+                    <div class="detail-card wallet-section" style="margin-top: 1.5rem;">
+                        <h3 class="section-title">Digital Wallet</h3>
+                        <button class="btn-outline" onclick="showToast('Apple Wallet integration coming soon!')">Add to Apple Wallet (Coming Soon)</button>
+                        <button class="btn-outline" style="margin-top: 0.5rem;" onclick="showToast('Google Wallet integration coming soon!')">Add to Google Wallet (Coming Soon)</button>
+                        <p class="note">* Wallet integrations require Apple Developer and Google Cloud credentials</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const cards = [
+            {
+                id: '1',
+                name: 'Fardan Jabir Tareen',
+                title: 'Head of IT',
+                company: 'FTASM Services',
+                mobile: '+971 50 123 4567',
+                email: 'fardan@ftasmservices.com',
+                industry: 'Information Technology'
+            },
+            {
+                id: '2',
+                name: 'Shayaan Shakeel Moidin Udupi',
+                title: 'Head of Music and Updates',
+                company: 'FTASM Services',
+                mobile: '+971 50 765 4321',
+                email: 'shayaan@ftasmservices.com',
+                industry: 'Media & Entertainment'
+            }
+        ];
+
+        function getInitials(name) {
+            return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('cards-grid');
+            grid.innerHTML = cards.map(card => `
+                <div class="card" onclick="showDetail('${card.id}')">
+                    <div class="card-body">
+                        <div class="card-image-placeholder">
+                            <span class="initials">${getInitials(card.name)}</span>
+                            <span class="fullname">${card.name}</span>
+                        </div>
+                        <h3>${card.name}</h3>
+                        <p class="role">${card.title}</p>
+                        <p class="company">${card.company}</p>
+                        <div class="view-link">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Click to view details
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showDetail(id) {
+            const card = cards.find(c => c.id === id);
+            if (!card) return;
+
+            document.getElementById('detail-preview').innerHTML = `
+                <h2>${card.name}</h2>
+                <p class="title">${card.title}</p>
+                <p class="company">${card.company}</p>
+            `;
+
+            document.getElementById('detail-info').innerHTML = `
+                <h2>${card.name}</h2>
+                <p class="role-text">${card.title}</p>
+                <div class="info-row"><strong>Company:</strong> ${card.company}</div>
+                <div class="info-row"><strong>Mobile:</strong> ${card.mobile}</div>
+                <div class="info-row"><strong>Email:</strong> ${card.email}</div>
+                <div class="info-row"><strong>Industry:</strong> ${card.industry}</div>
+                <div class="contact-actions">
+                    <a href="tel:${card.mobile}">Call ${card.name}</a>
+                    <a href="mailto:${card.email}">Email ${card.name}</a>
+                </div>
+            `;
+
+            document.getElementById('download-buttons').innerHTML = `
+                <button class="btn-gold" onclick="downloadVCard('${card.id}')">vCard</button>
+                <button class="btn-gold" onclick="showToast('PDF download requires backend server')">PDF</button>
+                <button class="btn-gold" onclick="showToast('Image download requires backend server')">Image</button>
+                <button class="btn-gold" onclick="showToast('QR Code requires backend server')">QR Code</button>
+            `;
+
+            document.getElementById('gallery-view').style.display = 'none';
+            document.getElementById('detail-view').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function showGallery() {
+            document.getElementById('detail-view').classList.remove('active');
+            document.getElementById('gallery-view').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function downloadVCard(id) {
+            const card = cards.find(c => c.id === id);
+            if (!card) return;
+            const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:${card.name}
+ORG:${card.company}
+TITLE:${card.title}
+TEL;TYPE=CELL:${card.mobile}
+EMAIL:${card.email}
+END:VCARD`;
+            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = card.name.replace(/ /g, '_') + '.vcf';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('vCard downloaded! Add to your contacts.');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        renderGallery();
+    </script>
+</body>
+</html>
